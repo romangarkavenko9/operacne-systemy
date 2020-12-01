@@ -1,5 +1,16 @@
 #!/bin/bash
-if [ "$#" == 2 ]
+
+if [ "$#" == 1 ]
+then
+        meno="$1"
+        shift
+VCERA=$(date -d yesterday +"%m-%d-%Y" | tr '-' '/')
+vSEK=$(date -d $VCERA +'%s')
+Koniec=$(echo $vSEK+86400 | bc)
+URL='https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=csv&stationString='"$meno"'&startTime='"$vSEK"'&endTime='"$Koniec"''
+curl -s "$URL" | grep  $meno
+
+elif [ "$#" == 2 ]
 then
 datearc=$(echo $1 | tr '-' '/')
 datearc2=$(echo $datearc | { IFS=/ read d m y && echo "$m/$d/$y"; })
@@ -7,7 +18,8 @@ datearc3=$(date -d $datearc2 +'%s')
 endtime=$(echo $datearc3+86400 | bc)
 meno=$(echo $2 | tr [:lower:] [:upper:])
 URL='https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=csv&stationString='"$meno"'&startTime='"$datearc3"'&endTime='"$endtime"''
-curl -s "$URL" | tail -n +6 | sed 's/.*elevation_m/zalupa/' | cut -f 1 -d " "
+curl -s "$URL" | grep $meno
+
 else 
 	echo ste zadali malo argumentov
 fi
