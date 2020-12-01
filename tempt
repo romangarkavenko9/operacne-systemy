@@ -1,0 +1,20 @@
+#!/bin/bash
+NAZOV="Metar"
+LINE="$1"
+cat <<THE_END
+set terminal wxt
+set xdata time
+set timeft "%H-%M"
+set xtics format "%H:%M"
+plot '-' using 1:2 with boxes
+THE_END
+while read LINE
+do
+	TEP=$(echo "$LINE" | cut -f 6 -d , | cut -f 1 -d .)
+	CAS=$(echo "$LINE" | cut -f 3 -d , | sed 's/.*T//' | cut -f 1,2 -d : | tr ':' '-') 
+	echo "$CAS" " " "$TEP"
+
+done
+cat <<THE_END
+e
+THE_END
